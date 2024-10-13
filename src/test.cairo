@@ -1,12 +1,22 @@
+use core::circuit::u384;
 use modexp::utils::get_bits_little;
 use modexp::modexp_cairo::mod_exp_cairo;
+use modexp::modexp_circuit::mod_exp_circuit;
 
 const TWO_31: u256 = 2147483648;
+const PREV_PRIME_256: u256 = 0xffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff43;
+const PREV_PRIME_384: u384 =
+    u384 {
+        limb0: 0xfffffffffffffffffffffec3,
+        limb1: 0xffffffffffffffffffffffff,
+        limb2: 0xffffffffffffffffffffffff,
+        limb3: 0xffffffffffffffffffffffff
+    };
 
 #[test]
 fn test_get_bits_little() {
     let bits = get_bits_little(0b100000111);
-    println!("Testing mod_exp {:?}", bits);
+    assert_eq!(bits, array![1, 1, 1, 0, 0, 0, 0, 0, 1]);
 }
 
 #[test]
@@ -16,48 +26,49 @@ fn test_mod_exp_cairo() {
     assert_eq!(mod_exp_cairo(5, TWO_31 - 2, TWO_31 - 1), 1, "wrong result");
     assert_eq!(mod_exp_cairo(7, TWO_31 - 2, TWO_31 - 1), 1, "wrong result");
     assert_eq!(mod_exp_cairo(11, TWO_31 - 2, TWO_31 - 1), 1, "wrong result");
-    assert_eq!(mod_exp_cairo(2, 5, 30), 2, "wrong result");
+    assert_eq!(
+        mod_exp_cairo(PREV_PRIME_256 - 2, PREV_PRIME_256 - 1, PREV_PRIME_256), 1, "wrong result"
+    );
     assert_eq!(
         mod_exp_cairo(123456789, 987654321, 11111111111111111111111111111111),
         6929919895158922141640454333396,
         "wrong result"
     );
 }
-// #[test]
-// fn test_mod_exp_circuit() {
-//     assert_eq!(
-//         mod_exp_circuit(2.into(), (TWO_31 - 2).into(), (TWO_31 - 1).into()),
-//         1.into(),
-//         "wrong result"
-//     );
-//     assert_eq!(
-//         mod_exp_circuit(3.into(), (TWO_31 - 2).into(), (TWO_31 - 1).into()),
-//         1.into(),
-//         "wrong result"
-//     );
-//     assert_eq!(
-//         mod_exp_circuit(5.into(), (TWO_31 - 2).into(), (TWO_31 - 1).into()),
-//         1.into(),
-//         "wrong result"
-//     );
-//     assert_eq!(
-//         mod_exp_circuit(7.into(), (TWO_31 - 2).into(), (TWO_31 - 1).into()),
-//         1.into(),
-//         "wrong result"
-//     );
-//     assert_eq!(
-//         mod_exp_circuit(11.into(), (TWO_31 - 2).into(), (TWO_31 - 1).into()),
-//         1.into(),
-//         "wrong result"
-//     );
-//     assert_eq!(mod_exp_circuit(2.into(), 5.into(), 30.into()), 2.into(), "wrong result");
-//     assert_eq!(
-//         mod_exp_circuit(
-//             123456789.into(), 987654321.into(), 11111111111111111111111111111111.into()
-//         ),
-//         6929919895158922141640454333396.into(),
-//         "wrong result"
-//     );
-// }
-
+#[test]
+fn test_mod_exp_circuit() {
+    let TWO_31_M1: u384 = 2147483647.into();
+    let TWO_31_M2: u384 = 2147483646.into();
+    assert_eq!(mod_exp_circuit(2.into(), TWO_31_M2, TWO_31_M1), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(3.into(), TWO_31_M2, TWO_31_M1), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(5.into(), TWO_31_M2, TWO_31_M1), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(7.into(), TWO_31_M2, TWO_31_M1), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(11.into(), TWO_31_M2, TWO_31_M1), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(2.into(), TWO_31_M2, TWO_31_M1.into()), 1.into(), "wrong result");
+    assert_eq!(mod_exp_circuit(2.into(), 5.into(), 30.into()), 2.into(), "wrong result");
+    assert_eq!(
+        mod_exp_circuit(
+            123456789.into(), 987654321.into(), 11111111111111111111111111111111.into()
+        ),
+        6929919895158922141640454333396.into(),
+        "wrong result"
+    );
+    let PREV_PRIME_384_M1: u384 = u384 {
+        limb0: 0xfffffffffffffffffffffec2,
+        limb1: 0xffffffffffffffffffffffff,
+        limb2: 0xffffffffffffffffffffffff,
+        limb3: 0xffffffffffffffffffffffff
+    };
+    let PREV_PRIME_384_M2: u384 = u384 {
+        limb0: 0xfffffffffffffffffffffec1,
+        limb1: 0xffffffffffffffffffffffff,
+        limb2: 0xffffffffffffffffffffffff,
+        limb3: 0xffffffffffffffffffffffff
+    };
+    assert_eq!(
+        mod_exp_circuit(PREV_PRIME_384_M2, PREV_PRIME_384_M1, PREV_PRIME_384),
+        1.into(),
+        "wrong result"
+    );
+}
 
