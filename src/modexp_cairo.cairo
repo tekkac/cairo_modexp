@@ -24,7 +24,7 @@ pub fn mod_exp_cairo(x: u256, y: u256, n: u256) -> u256 {
         if bit == 1 {
             result = u256_mul_mod(result, base, modulus);
         }
-        base = (base * base) % n;
+        base = u256_mul_mod(base, base, modulus);
     };
 
     result
