@@ -9,11 +9,11 @@ pub fn mod_exp_cairo(x: u256, y: u256, n: u256) -> u256 {
     if n <= 1 {
         return 0;
     };
-    if x.is_zero() {
-        return 0;
-    };
     if y.is_zero() {
         return 1;
+    };
+    if x.is_zero() {
+        return 0;
     };
 
     let mut result = 1_u256;

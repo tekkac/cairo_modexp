@@ -39,13 +39,18 @@ fn mod_exp_loop_inner(n: u384, bit: u384, base: u384, res: u384) -> (u384, u384)
 // Compute the modular exponentiation
 // x^y mod n
 pub fn mod_exp_circuit(x: u384, y: u384, n: u384) -> u384 {
-    if x.is_zero() {
-        return 0.into();
-    }
     if n.is_zero() {
         return 0.into();
     }
-
+    if n == 1.into() {
+        return 0.into();
+    }
+    if y.is_zero() {
+        return 1.into();
+    }
+    if x.is_zero() {
+        return 0.into();
+    }
     let bits = get_u384_bits_little(y);
     let mut res = 1.into();
     let mut base = x;
@@ -54,6 +59,5 @@ pub fn mod_exp_circuit(x: u384, y: u384, n: u384) -> u384 {
         res = _res;
         base = _base;
     };
-
     res
 }
