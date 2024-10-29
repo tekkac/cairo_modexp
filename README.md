@@ -1,10 +1,7 @@
 # Modular exponentation in Cairo
 
 ## About
-An Cairo implementation of modular exponentation:
-$
-\text{modexp}(x,y,n) = x^y\ \mathbf{mod}\ n
-$
+An Cairo implementation of modular exponentation: $\text{modexp}(x,y,n) = x^y\ \mathbf{mod}\ n$
 
 Pseudo-code algorithm for the non-trivial cases:
 ```
